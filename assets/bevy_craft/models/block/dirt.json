@@ -1,0 +1,7 @@
+{
+  "parent": "bevy_craft:block/cube_all",
+  "textures": {
+    "all": "bevy_craft:block/dirt"
+  }
+}
+
