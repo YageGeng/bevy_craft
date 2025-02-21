@@ -1,6 +1,7 @@
 use std::{borrow::Cow, hash::Hash};
 
 pub mod block_id;
+pub mod texture_id;
 
 pub const IDENTITY_DELIMITER: char = ':';
 pub const DEFAULT_NAMESPACE: &str = "bevy_craft";

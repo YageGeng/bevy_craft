@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::texture::Texture;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Element {
     /// 立方体左下角坐标
     pub from: [u8; 3],
@@ -13,7 +13,13 @@ pub struct Element {
     pub faces: HashMap<BlockFace, ElementFace>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+impl Element {
+    pub fn face_posittion(&self, _face: BlockFace) {
+        
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ElementFace {
     /// uv坐标
     pub uv: Option<[u8; 4]>,

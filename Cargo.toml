@@ -4,6 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.15.2", features = ["wayland"] }
+bevy = { version = "0.15.2", features = ["wayland", "serialize"] }
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.138"
+derive_more = { version = "1", default-features = false, features = [
+    "error",
+    "from",
+    "display",
+    "into_iterator",
+] }
+bevy_asset_loader = "0.22.0"
+topo_sort = "0.4.0"

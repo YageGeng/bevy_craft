@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 const MODEL_TEXTURE_TAG: char = '#';
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct Textures {
     #[serde(flatten)]
     pub variables: HashMap<String, Texture>,
@@ -20,9 +20,24 @@ impl Textures {
         }
     }
 
+    pub fn texture_path(&self, key: &str) -> Option<&Texture> {
+        let mut _key = key;
+        while let Some(texture) = self.variables.get(_key) {
+            match texture.reference() {
+                Some(k) => _key = k,
+                None => return Some(texture),
+            }
+        }
+
+        None
+    }
+
     pub fn merge(&mut self, other: Self) {
+        // // 非必需的
+        // other.resolve(&self);
+        // self.resolve(&other);
+
         for (name, texture) in other.variables.into_iter() {
-            //println!("inserting: {:?}", (&name, &texture));
             self.insert(name, texture);
         }
     }
