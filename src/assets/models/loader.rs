@@ -51,7 +51,7 @@ pub fn resolve_models(
     mut commands: Commands,
     model_handles: ResMut<ModelAssets>,
     mut models_assets: ResMut<Assets<Model>>,
-    mut next_state: ResMut<NextState<BCLoadState>>,
+    mut next_state: ResMut<NextState<AppLoadState>>,
 ) {
     let mut result = ModelManager::default();
     model_handles.into_iter().for_each(|handle| {
@@ -67,5 +67,5 @@ pub fn resolve_models(
     result.merge();
     commands.remove_resource::<ModelAssets>();
     commands.insert_resource(result);
-    next_state.set(BCLoadState::TextureLoading);
+    next_state.set(AppLoadState::TextureLoading);
 }

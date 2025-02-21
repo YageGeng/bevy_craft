@@ -50,18 +50,17 @@ impl ModelManager {
         }
     }
 
-    pub fn pre_load_image(&self, asset_server: Res<AssetServer>) -> Vec<Handle<Image>> {
+    pub fn all_texture_path(&self) -> Vec<String> {
         self.models
             .values()
             .flat_map(|model| &model.textures)
             .flat_map(|texture| texture.values())
             .filter_map(|texture| {
                 TextureId::try_from(texture)
-                    .map_err(|err| log::warn!("{}", err))
+                    .map_err(|err| log::debug!("{}", err))
                     .ok()
                     .map(|texture_id| texture_id.path())
             })
-            .map(|texture_path| asset_server.load::<Image>(texture_path))
             .collect()
     }
 }

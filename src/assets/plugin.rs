@@ -3,10 +3,10 @@ use bevy_asset_loader::prelude::*;
 
 use super::prelude::*;
 
-pub struct BCAssetPlugin;
+pub struct AppAssetPlugin;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
-pub enum BCLoadState {
+pub enum AppLoadState {
     #[default]
     ModelLoading,
     ModelLoaded,
@@ -15,18 +15,23 @@ pub enum BCLoadState {
     Next,
 }
 
-impl Plugin for BCAssetPlugin {
+impl Plugin for AppAssetPlugin {
     fn build(&self, app: &mut App) {
         app.init_asset::<Model>()
-            .init_state::<BCLoadState>()
+            .init_state::<AppLoadState>()
             .register_asset_loader(ModelLoader)
             .add_loading_state(
-                LoadingState::new(BCLoadState::ModelLoading)
-                    .continue_to_state(BCLoadState::ModelLoaded)
+                LoadingState::new(AppLoadState::ModelLoading)
+                    .continue_to_state(AppLoadState::ModelLoaded)
                     .load_collection::<ModelAssets>(),
             )
-            .add_systems(OnEnter(BCLoadState::Next), resolve_models)
-            // .add_systems(OnEnter(BCLoadState::TextureLoading), ())
-            ;
+            .add_loading_state(
+                LoadingState::new(AppLoadState::TextureLoading)
+                    .continue_to_state(AppLoadState::TextureLoaded)
+                    .load_collection::<BlockTextures>(),
+            )
+            .add_systems(OnEnter(AppLoadState::ModelLoaded), resolve_models)
+            .add_systems(OnEnter(AppLoadState::TextureLoading), pre_texture_load)
+            .add_systems(OnEnter(AppLoadState::TextureLoaded), build_atlas);
     }
 }
