@@ -14,9 +14,19 @@ use crate::{identity::*, models::model::Model};
 pub struct BlockId(pub String);
 
 impl Identity for BlockId {
+    const DIR: &str = "models";
+
+    const EXTENSION: &str = "json";
+
     fn id(&self) -> &str {
         &self.0
     }
+}
+
+impl Pathable for BlockId {
+    const _DIR: &str = "/models/";
+
+    const _EXTENSION: &str = ".json";
 }
 
 impl FromStr for BlockId {
@@ -25,7 +35,7 @@ impl FromStr for BlockId {
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         let (ns, remainder) = if let Some((ns, value)) = value.split_once(IDENTITY_DELIMITER) {
             (ns, value)
-        } else if let Some((ns, value)) = value.split_once("/models/") {
+        } else if let Some((ns, value)) = value.split_once(Self::_DIR) {
             (ns, value)
         } else {
             (DEFAULT_NAMESPACE, value)
@@ -35,7 +45,9 @@ impl FromStr for BlockId {
             return Err(IdentityError::BlockIdError(value.to_string()));
         }
 
-        let value = remainder.strip_suffix(".json").unwrap_or(remainder);
+        let value = remainder
+            .strip_suffix(Self::_EXTENSION)
+            .unwrap_or(remainder);
 
         Ok(Self(format!("{}:{}", ns, value)))
     }
