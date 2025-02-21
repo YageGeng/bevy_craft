@@ -30,9 +30,8 @@ fn resolve_models(mut model_manager: ResMut<ModelManager>) {
         serde_json::to_string_pretty(
             &model_manager
                 .models
-                .get(&bevy_craft::identity::block_id::BlockId::new(
-                    "bevy_craft",
-                    "block/dirt"
+                .get(&bevy_craft::identity::block_id::BlockId(
+                    "bevy_craft:block/dirt".to_string()
                 ))
                 .unwrap()
         )

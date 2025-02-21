@@ -1,5 +1,5 @@
 use crate::identity::block_id::BlockId;
-use bevy::{prelude::*, utils::HashMap, };
+use bevy::{log, prelude::*, utils::HashMap};
 use topo_sort::TopoSort;
 
 use super::model::Model;
@@ -20,7 +20,7 @@ impl ModelManager {
                 model
                     .parent
                     .as_ref()
-                    .and_then(|id| Some(BlockId::from(id.as_str()))),
+                    .and_then(|id| BlockId::try_from(id.as_str()).ok()),
             );
         }
 
@@ -31,8 +31,13 @@ impl ModelManager {
                         .models
                         .get(&block_id)
                         .and_then(|model| model.parent.as_ref())
-                        .and_then(|parent| self.models.get(&BlockId::from(parent.as_str())))
-                        .map(|parent_model| parent_model.clone());
+                        .and_then(|parent| {
+                            BlockId::try_from(parent.as_str())
+                                .map_err(|e| log::error!("{}", e))
+                                .ok()
+                                .and_then(|key| self.models.get(&key))
+                        })
+                        .cloned();
 
                     // unwrap is safe
                     if let Some(parent_model) = parent_model {

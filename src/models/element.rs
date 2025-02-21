@@ -13,12 +13,6 @@ pub struct Element {
     pub faces: HashMap<BlockFace, ElementFace>,
 }
 
-impl Element {
-    pub fn face_posittion(&self, _face: BlockFace) {
-        
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ElementFace {
     /// uv坐标
@@ -34,10 +28,24 @@ pub struct ElementFace {
 #[repr(u8)]
 pub enum BlockFace {
     #[serde(alias = "bottom")]
-    Down,
-    Up,
-    North,
-    South,
-    West,
-    East,
+    Down, // -Y
+    Up,    // +Y
+    North, // -Z
+    South, // +Z
+    West,  // -X
+    East,  // +X
+}
+
+impl BlockFace {
+    #[rustfmt::skip]
+    pub const fn normal(&self) -> [f32; 3] {
+        match self {
+            BlockFace::Down  => [0.0, -1.0, 0.0],   // -Y
+            BlockFace::Up    => [0.0, 1.0, 0.0],    // +Y
+            BlockFace::North => [0.0, 0.0, -1.0],   // -Z
+            BlockFace::South => [0.0, 0.0, 1.0],    // +Z
+            BlockFace::West  => [-1.0, 0.0, 0.0],   // -X
+            BlockFace::East  => [1.0, 0.0, 0.0],    // +X
+        }
+    }
 }
