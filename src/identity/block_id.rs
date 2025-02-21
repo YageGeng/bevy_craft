@@ -23,7 +23,7 @@ impl Identity for BlockId {
     }
 }
 
-impl Pathable for BlockId {
+impl IdentityExtra for BlockId {
     const _DIR: &str = "/models/";
 
     const _EXTENSION: &str = ".json";
@@ -120,5 +120,11 @@ mod test {
             block_id.unwrap_err(),
             IdentityError::BlockIdError(String::from("bevy_craft:models/block/cube.json"))
         );
+    }
+
+    #[test]
+    fn test_path() {
+        let block_id = BlockId("bevy_craft:block/cube".to_string());
+        assert_eq!(block_id.path(), "bevy_craft/models/block/cube.json")
     }
 }

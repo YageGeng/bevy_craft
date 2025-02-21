@@ -27,12 +27,22 @@ pub trait Identity: Eq + Hash {
     fn name(&self) -> &str {
         self.id()
             .find(IDENTITY_DELIMITER)
-            .map(|pos| &self.id()[pos..])
+            .map(|pos| &self.id()[pos + 1..])
             .unwrap_or(self.id())
+    }
+
+    fn path(&self) -> String {
+        format!(
+            "{}/{}/{}.{}",
+            self.ns(),
+            Self::DIR,
+            self.name(),
+            Self::EXTENSION
+        )
     }
 }
 
-pub(crate) trait Pathable: Identity {
+pub(crate) trait IdentityExtra: Identity {
     const _DIR: &str;
     const _EXTENSION: &str;
 }

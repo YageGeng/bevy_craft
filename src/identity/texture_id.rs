@@ -5,7 +5,7 @@ use derive_more::derive::{Display, From};
 
 use crate::models::{model::Model, texture::Texture};
 
-use super::{Identity, IdentityError, Pathable, DEFAULT_NAMESPACE, IDENTITY_DELIMITER};
+use super::{Identity, IdentityError, IdentityExtra, DEFAULT_NAMESPACE, IDENTITY_DELIMITER};
 
 #[derive(Display, Debug, Hash, PartialEq, Eq, Clone, From)]
 #[display("{}", _0)]
@@ -21,7 +21,7 @@ impl Identity for TextureId {
     }
 }
 
-impl Pathable for TextureId {
+impl IdentityExtra for TextureId {
     const _DIR: &str = "/textures/";
 
     const _EXTENSION: &str = ".png";
@@ -163,5 +163,11 @@ mod test {
             texture_id.unwrap_err(),
             IdentityError::TextureIdError("bevy_craft:textures/block/cube.png".to_string())
         );
+    }
+
+    #[test]
+    fn test_path() {
+        let block_id = TextureId("bevy_craft:block/cube".to_string());
+        assert_eq!(block_id.path(), "bevy_craft/textures/block/cube.png")
     }
 }
