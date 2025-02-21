@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use super::{element::Element, texture::Textures};
+use crate::assets::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Asset, TypePath)]
 pub struct Model {

@@ -49,8 +49,8 @@ pub(crate) trait IdentityExtra: Identity {
 
 #[derive(Debug, Error, Display, PartialEq, Eq)]
 pub enum IdentityError {
-    #[display("parse BlockId error, {}", _0)]
+    #[display("parse BlockId{{ {} }} error", _0)]
     BlockIdError(#[error(not(source))] String),
-    #[display("parse TextureId error, {}", _0)]
+    #[display("parse TextureId{{ {} }} error", _0)]
     TextureIdError(#[error(not(source))] String),
 }

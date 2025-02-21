@@ -5,8 +5,7 @@ use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use derive_more::derive::{Display, Error, From, IntoIterator};
 
-use super::manager::ModelManager;
-use super::model::Model;
+use crate::assets::prelude::*;
 
 pub const BLOCK_MODELS_PATH: &str = "bevy_craft/models/block";
 
@@ -48,17 +47,11 @@ pub struct ModelAssets {
     models: Vec<Handle<Model>>,
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
-pub enum ModelLoadState {
-    #[default]
-    Loading,
-    Next,
-}
-
-pub fn pre_resolve_models(
+pub fn resolve_models(
     mut commands: Commands,
     model_handles: ResMut<ModelAssets>,
     mut models_assets: ResMut<Assets<Model>>,
+    mut next_state: ResMut<NextState<BCLoadState>>,
 ) {
     let mut result = ModelManager::default();
     model_handles.into_iter().for_each(|handle| {
@@ -71,6 +64,8 @@ pub fn pre_resolve_models(
         }
     });
 
+    result.merge();
     commands.remove_resource::<ModelAssets>();
     commands.insert_resource(result);
+    next_state.set(BCLoadState::TextureLoading);
 }

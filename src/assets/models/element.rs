@@ -1,7 +1,7 @@
 use bevy::utils::HashMap;
 use serde::{Deserialize, Serialize};
 
-use super::texture::Texture;
+use crate::assets::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Element {

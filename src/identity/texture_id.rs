@@ -3,9 +3,8 @@ use std::{path::Path, str::FromStr};
 use bevy::prelude::*;
 use derive_more::derive::{Display, From};
 
-use crate::models::{model::Model, texture::Texture};
-
-use super::{Identity, IdentityError, IdentityExtra, DEFAULT_NAMESPACE, IDENTITY_DELIMITER};
+use crate::assets::prelude::*;
+use crate::identity::*;
 
 #[derive(Display, Debug, Hash, PartialEq, Eq, Clone, From)]
 #[display("{}", _0)]

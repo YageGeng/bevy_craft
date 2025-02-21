@@ -3,8 +3,8 @@ use std::{path::Path, str::FromStr};
 use bevy::prelude::*;
 use derive_more::derive::{Display, From};
 
-use super::{Identity, IdentityError};
-use crate::{identity::*, models::model::Model};
+use crate::assets::prelude::*;
+use crate::identity::*;
 
 /// block id
 /// a block_id must be namespace:block/name
