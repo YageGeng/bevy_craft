@@ -54,3 +54,9 @@ pub enum IdentityError {
     #[display("parse TextureId{{ {} }} error", _0)]
     TextureIdError(#[error(not(source))] String),
 }
+
+pub mod prelude {
+    pub use super::block_id::*;
+    pub use super::texture_id::*;
+    pub use super::{Identity, IdentityError};
+}

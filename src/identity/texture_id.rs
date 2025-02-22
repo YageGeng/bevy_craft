@@ -50,10 +50,10 @@ impl FromStr for TextureId {
     }
 }
 
-impl TryFrom<&Handle<Model>> for TextureId {
+impl TryFrom<&Handle<Image>> for TextureId {
     type Error = IdentityError;
 
-    fn try_from(handle: &Handle<Model>) -> Result<Self, Self::Error> {
+    fn try_from(handle: &Handle<Image>) -> Result<Self, Self::Error> {
         let path = handle
             .path()
             .ok_or(IdentityError::TextureIdError(handle.id().to_string()))?
