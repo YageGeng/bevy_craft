@@ -91,10 +91,10 @@ impl BlockFace {
                 [max.x, min.y, min.z],
             ],
             BlockFace::South => [
-                [min.x, min.y, max.z],
                 [min.x, max.y, max.z],
                 [max.x, max.y, max.z],
                 [max.x, min.y, max.z],
+                [min.x, min.y, max.z],
             ],
             BlockFace::West => [
                 [min.x, max.y, min.z],
@@ -148,13 +148,23 @@ impl BlockFace {
     }
 
     pub fn indice(&self, offset: u32) -> [u32; 6] {
-        [
-            offset,
-            offset + 3,
-            offset + 1,
-            offset + 1,
-            offset + 3,
-            offset + 2,
-        ]
+        match self {
+            BlockFace::Down => [
+                offset,
+                offset + 1,
+                offset + 3,
+                offset + 1,
+                offset + 2,
+                offset + 3,
+            ],
+            _ => [
+                offset,
+                offset + 3,
+                offset + 1,
+                offset + 1,
+                offset + 3,
+                offset + 2,
+            ],
+        }
     }
 }

@@ -14,8 +14,12 @@ pub struct Vertex {
 
 impl MeshBuilder for Vertex {
     fn build(&self) -> Mesh {
-        info!("position: {:?}", self.positions);
-        info!("indice: {:?}", self.indices);
+        // for (idx, pos) in self.positions.chunks(4).enumerate() {
+        //     bevy::log::info!("Normal {:?}", self.normals[idx * 4]);
+        //     bevy::log::info!("{:?}", pos);
+        //     bevy::log::info!("{:?}", &self.indices[idx * 6..idx * 6 + 6])
+        // }
+
         Mesh::new(
             PrimitiveTopology::TriangleList,
             RenderAssetUsages::MAIN_WORLD | RenderAssetUsages::RENDER_WORLD,
