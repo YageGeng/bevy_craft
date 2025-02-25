@@ -1,11 +1,14 @@
-use bevy::{math::Vec3, utils::HashMap};
+use bevy::{prelude::*, utils::HashMap};
 
-use crate::identity::block_id::BlockId;
+use crate::identity::prelude::*;
 
+pub const CHUNK_SIZE: i32 = 16;
+
+#[derive(Component)]
 pub struct Chunk {
-    /// 区块位置
-    pub position: Vec3,
-    pub data: HashMap<Vec3, BlockData>,
+    /// y is always 0
+    pub position: IVec3,
+    pub data: HashMap<IVec3, BlockData>,
 }
 
 pub struct BlockData {

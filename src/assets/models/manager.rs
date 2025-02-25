@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 use crate::identity::{block_id::BlockId, texture_id::TextureId, Identity};
 use bevy::{log, prelude::*, utils::HashMap};
 use topo_sort::TopoSort;
@@ -6,7 +8,21 @@ use crate::assets::prelude::*;
 
 #[derive(Resource, Default)]
 pub struct ModelManager {
-    pub models: HashMap<BlockId, Model>,
+    models: HashMap<BlockId, Model>,
+}
+
+impl Deref for ModelManager {
+    type Target = HashMap<BlockId, Model>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.models
+    }
+}
+
+impl DerefMut for ModelManager {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.models
+    }
 }
 
 impl ModelManager {

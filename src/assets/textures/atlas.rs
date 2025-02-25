@@ -18,7 +18,20 @@ pub struct AppTextureAtlas<T: Identity> {
 }
 
 impl<T: Identity> AppTextureAtlas<T> {
-    pub fn uv<U: Into<TextureId>>(&self, texture_id: U) -> Option<URect> {
+    pub fn uv<U: Into<TextureId>>(&self, texture_id: U) -> Option<Rect> {
+        self._uv(texture_id).map(|urect| {
+            let size = self.size();
+
+            Rect::new(
+                urect.min.x as f32 / size.x as f32,
+                urect.min.y as f32 / size.y as f32,
+                urect.max.x as f32 / size.x as f32,
+                urect.max.y as f32 / size.y as f32,
+            )
+        })
+    }
+
+    fn _uv<U: Into<TextureId>>(&self, texture_id: U) -> Option<URect> {
         self.texture_map
             .get(&texture_id.into())
             .and_then(|asset_id| self.source.texture_ids.get(asset_id))
@@ -42,7 +55,6 @@ pub fn build_atlas(
     mut app_state: ResMut<NextState<AppLoadState>>,
 ) {
     let mut builder = TextureAtlasBuilder::default();
-    builder.max_size(DEFAULT_ATLAS_MAX_SIZE);
     builder.padding(UVec2::splat(2));
 
     let mut texture_map: HashMap<TextureId, AssetId<Image>> =
@@ -63,7 +75,9 @@ pub fn build_atlas(
         }
     }
 
+    let mut max_size = DEFAULT_ATLAS_MAX_SIZE;
     loop {
+        builder.max_size(max_size);
         match builder.build() {
             Ok((layout, source, mut atlas_image)) => {
                 atlas_image.sampler = ImageSampler::nearest();
@@ -82,8 +96,7 @@ pub fn build_atlas(
 
             Err(err) => match err {
                 TextureAtlasBuilderError::NotEnoughSpace => {
-                    bevy::log::warn!("texture atlas is too small, try again");
-                    builder.max_size(DEFAULT_ATLAS_MAX_SIZE * 2);
+                    max_size *= 2;
                     continue;
                 }
                 TextureAtlasBuilderError::WrongFormat => {

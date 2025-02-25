@@ -58,7 +58,7 @@ pub fn resolve_models(
         if let Some(model) = models_assets.remove(handle) {
             // unwrap is safe
             let block_id = BlockId::try_from(handle).unwrap();
-            result.models.insert(block_id, model);
+            result.insert(block_id, model);
         } else {
             log::error!("{:?} not loaded yet", handle);
         }
