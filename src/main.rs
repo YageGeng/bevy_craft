@@ -7,11 +7,7 @@ use bevy::{
     },
 };
 
-use bevy_craft::{
-    assets::prelude::*,
-    chunk::{BlockData, Chunk},
-    identity::prelude::*,
-};
+use bevy_craft::{assets::prelude::*, chunk::Chunk, identity::prelude::*};
 
 fn main() {
     App::new()
@@ -40,32 +36,7 @@ fn render_dirt(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let mut chunk = Chunk::default();
-    chunk.data.insert(
-        IVec3::new(0, 0, 0),
-        BlockData {
-            id: BlockId("bevy_craft:block/dirt".to_string()),
-        },
-    );
-    chunk.data.insert(
-        IVec3::new(0, 1, 0),
-        BlockData {
-            id: BlockId("bevy_craft:block/dirt".to_string()),
-        },
-    );
-    chunk.data.insert(
-        IVec3::new(1, 0, 0),
-        BlockData {
-            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-        },
-    );
-    chunk.data.insert(
-        IVec3::new(0, 0, 1),
-        BlockData {
-            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-        },
-    );
-
+    let chunk = Chunk::generate_with_noise(1234, 0.1, 0.1);
     let mesh = chunk.mesh(&atlas, &models);
 
     commands.spawn((
@@ -79,7 +50,7 @@ fn render_dirt(
 
     // Transform for the camera and lighting, looking at (0,0,0) (the position of the mesh).
     let camera_and_light_transform =
-        Transform::from_xyz(1.8, 1.8, 1.8).looking_at(Vec3::ZERO, Vec3::Y);
+        Transform::from_xyz(0.0, 5.0, 0.0).looking_at(Vec3::ZERO, Vec3::Y);
 
     // Camera in 3D space.
     commands.spawn((Camera3d::default(), camera_and_light_transform));

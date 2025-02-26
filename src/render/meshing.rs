@@ -45,7 +45,7 @@ impl Model {
 
                         // TODO: Alpha Face?
                         if should_cull_face {
-                            bevy::log::debug!("pos: {:?}, face: {:?}, cullface", pos, face);
+                            bevy::log::info!("pos: {:?}, face: {:?}, cullface", pos, face);
                             continue;
                         }
                     };
