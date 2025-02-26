@@ -4,7 +4,7 @@ use bevy::{
     render::mesh::{Indices, PrimitiveTopology},
 };
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct Vertex {
     pub positions: Vec<[f32; 3]>,
     pub normals: Vec<[f32; 3]>,
@@ -12,21 +12,45 @@ pub struct Vertex {
     pub indices: Vec<u32>,
 }
 
-impl MeshBuilder for Vertex {
-    fn build(&self) -> Mesh {
-        // for (idx, pos) in self.positions.chunks(4).enumerate() {
-        //     bevy::log::info!("Normal {:?}", self.normals[idx * 4]);
-        //     bevy::log::info!("{:?}", pos);
-        //     bevy::log::info!("{:?}", &self.indices[idx * 6..idx * 6 + 6])
-        // }
+impl Vertex {
+    pub fn merge(&mut self, other: Self) {
+        let indice_offset = self.positions.len() as u32;
+        self.positions.reserve(other.positions.len());
+        self.positions.extend(other.positions);
 
+        self.normals.reserve(other.normals.len());
+        self.normals.extend(other.normals);
+
+        self.uvs.reserve(other.uvs.len());
+        self.uvs.extend(other.uvs);
+
+        self.indices.reserve(other.indices.len());
+        self.indices.extend(
+            other
+                .indices
+                .into_iter()
+                .map(|indice| indice + indice_offset),
+        );
+    }
+}
+
+impl Extend<Vertex> for Vertex {
+    fn extend<T: IntoIterator<Item = Vertex>>(&mut self, vertexs: T) {
+        for vertex in vertexs {
+            self.merge(vertex);
+        }
+    }
+}
+
+impl From<Vertex> for Mesh {
+    fn from(value: Vertex) -> Self {
         Mesh::new(
             PrimitiveTopology::TriangleList,
             RenderAssetUsages::MAIN_WORLD | RenderAssetUsages::RENDER_WORLD,
         )
-        .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, self.positions.clone())
-        .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, self.uvs.clone())
-        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, self.normals.clone())
-        .with_inserted_indices(Indices::U32(self.indices.clone()))
+        .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, value.positions)
+        .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, value.uvs)
+        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, value.normals)
+        .with_inserted_indices(Indices::U32(value.indices))
     }
 }

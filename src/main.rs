@@ -1,4 +1,5 @@
 use bevy::{
+    pbr::wireframe::{WireframeConfig, WireframePlugin},
     prelude::*,
     render::{
         settings::{Backends, PowerPreference, RenderCreation, WgpuSettings},
@@ -6,7 +7,11 @@ use bevy::{
     },
 };
 
-use bevy_craft::{assets::prelude::*, identity::prelude::*};
+use bevy_craft::{
+    assets::prelude::*,
+    chunk::{BlockData, Chunk},
+    identity::prelude::*,
+};
 
 fn main() {
     App::new()
@@ -18,9 +23,11 @@ fn main() {
             }),
             ..Default::default()
         }))
+        .add_plugins(WireframePlugin)
         .add_plugins(AppAssetPlugin)
         .add_systems(OnEnter(AppLoadState::Next), render_dirt)
         .add_systems(Update, input_handler)
+        .add_systems(Update, toggle_wireframe)
         .run();
 }
 #[derive(Component)]
@@ -33,13 +40,33 @@ fn render_dirt(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let model = models
-        .get(&BlockId("bevy_craft:block/grass_block".to_string()))
-        .unwrap();
+    let mut chunk = Chunk::default();
+    chunk.data.insert(
+        IVec3::new(0, 0, 0),
+        BlockData {
+            id: BlockId("bevy_craft:block/dirt".to_string()),
+        },
+    );
+    chunk.data.insert(
+        IVec3::new(0, 1, 0),
+        BlockData {
+            id: BlockId("bevy_craft:block/dirt".to_string()),
+        },
+    );
+    chunk.data.insert(
+        IVec3::new(1, 0, 0),
+        BlockData {
+            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
+        },
+    );
+    chunk.data.insert(
+        IVec3::new(0, 0, 1),
+        BlockData {
+            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
+        },
+    );
 
-    let vertex = model.vertex(Vec3::splat(-0.5), &atlas).unwrap();
-
-    let mesh = vertex.build();
+    let mesh = chunk.mesh(&atlas, &models);
 
     commands.spawn((
         Mesh3d(meshes.add(mesh)),
@@ -49,6 +76,7 @@ fn render_dirt(
         })),
         CustomUV,
     ));
+
     // Transform for the camera and lighting, looking at (0,0,0) (the position of the mesh).
     let camera_and_light_transform =
         Transform::from_xyz(1.8, 1.8, 1.8).looking_at(Vec3::ZERO, Vec3::Y);
@@ -84,5 +112,11 @@ fn input_handler(
         for mut transform in &mut query {
             transform.look_to(Vec3::NEG_Z, Vec3::Y);
         }
+    }
+}
+
+fn toggle_wireframe(mut config: ResMut<WireframeConfig>, keys: Res<ButtonInput<KeyCode>>) {
+    if keys.just_pressed(KeyCode::F3) {
+        config.global = !config.global; // 按 F3 切换
     }
 }
