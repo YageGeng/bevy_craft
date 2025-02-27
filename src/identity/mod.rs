@@ -2,8 +2,8 @@ use std::hash::Hash;
 
 use derive_more::derive::{Display, Error};
 
-pub mod block_id;
-pub mod texture_id;
+pub(crate) mod block;
+pub(crate) mod texture_id;
 
 pub const IDENTITY_DELIMITER: char = ':';
 pub const DEFAULT_NAMESPACE: &str = "bevy_craft";
@@ -56,7 +56,7 @@ pub enum IdentityError {
 }
 
 pub mod prelude {
-    pub use super::block_id::*;
+    pub use super::block::prelude::*;
     pub use super::texture_id::*;
     pub use super::{Identity, IdentityError};
 }

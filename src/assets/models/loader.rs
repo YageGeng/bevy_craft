@@ -1,4 +1,4 @@
-use crate::identity::block_id::BlockId;
+use crate::identity::prelude::*;
 use bevy::asset::{io::Reader, AssetLoader, LoadContext};
 use bevy::log;
 use bevy::prelude::*;

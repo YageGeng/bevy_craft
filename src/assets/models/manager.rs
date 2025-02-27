@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::identity::{block_id::BlockId, texture_id::TextureId, Identity};
+use crate::identity::prelude::*;
 use bevy::{log, prelude::*, utils::HashMap};
 use topo_sort::TopoSort;
 
