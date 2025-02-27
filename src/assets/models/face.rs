@@ -20,7 +20,9 @@ pub struct Face<'a> {
 
 pub trait FaceAble {
     fn from(&self) -> [i8; 3];
+
     fn to(&self) -> [i8; 3];
+
     fn min(&self) -> Vec3 {
         let from = self.from();
         Vec3::new(
@@ -38,11 +40,21 @@ pub trait FaceAble {
             to[2] as f32 / DEFAULT_ELEMENT_SIZE_F32,
         )
     }
-}
 
-pub trait Surface {
-    fn rect(&self, face: BlockFace) -> I8Rect;
-    fn axis(&self, face: Axis, is_neg: bool) -> i8;
+    fn rect(&self, face: BlockFace) -> I8Rect {
+        let min = self.from();
+        let max = self.to();
+        let (x1, y1, x2, y2) = match face {
+            BlockFace::Down | BlockFace::Up => (min[0], min[2], max[0], max[2]),
+            BlockFace::North | BlockFace::South => (min[0], min[1], max[0], max[1]),
+            BlockFace::West | BlockFace::East => (min[1], min[2], max[1], max[2]),
+        };
+
+        I8Rect {
+            min: I8Vec2::new(x1.min(x2), y1.min(y2)),
+            max: I8Vec2::new(x1.max(x2), y1.max(y2)),
+        }
+    }
 
     // Only determine whether this surface is 16x16
     fn is_complete_face(&self, face: BlockFace) -> bool {
@@ -51,26 +63,16 @@ pub trait Surface {
 
     // only determine whether this surface is start with 0/16
     fn is_normal_face(&self, face: BlockFace) -> bool {
-        self.axis(face.into(), face.is_neg_axis()) == face.default_size()
-    }
-}
+        let value = match face {
+            BlockFace::Down => self.from()[1],
+            BlockFace::Up => self.to()[1],
+            BlockFace::North => self.from()[2],
+            BlockFace::South => self.to()[2],
+            BlockFace::West => self.from()[0],
+            BlockFace::East => self.to()[0],
+        };
 
-impl<T: FaceAble> Surface for T {
-    fn rect(&self, face: BlockFace) -> I8Rect {
-        rect(face, self.from(), self.to())
-    }
-
-    fn axis(&self, face: Axis, is_neg: bool) -> i8 {
-        let from = self.from();
-        let to = self.to();
-        match (is_neg, face) {
-            (true, Axis::X) => from[0],
-            (true, Axis::Y) => from[1],
-            (true, Axis::Z) => from[2],
-            (false, Axis::X) => to[0],
-            (false, Axis::Y) => to[1],
-            (false, Axis::Z) => to[2],
-        }
+        face.default_size() == value
     }
 }
 
@@ -100,19 +102,5 @@ impl I8Rect {
 
     pub fn contains(&self, point: I8Vec2) -> bool {
         (point.cmpge(self.min) & point.cmple(self.max)).all()
-    }
-}
-
-/// get face rect from min and max
-fn rect(face: BlockFace, min: [i8; 3], max: [i8; 3]) -> I8Rect {
-    let (x1, y1, x2, y2) = match face {
-        BlockFace::Down | BlockFace::Up => (min[0], min[2], max[0], max[2]),
-        BlockFace::North | BlockFace::South => (min[0], min[1], max[0], max[1]),
-        BlockFace::West | BlockFace::East => (min[1], min[2], max[1], max[2]),
-    };
-
-    I8Rect {
-        min: I8Vec2::new(x1.min(x2), y1.min(y2)),
-        max: I8Vec2::new(x1.max(x2), y1.max(y2)),
     }
 }

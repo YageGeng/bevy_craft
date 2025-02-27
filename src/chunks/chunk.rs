@@ -1,5 +1,4 @@
 use bevy::{prelude::*, utils::HashMap};
-use noise::{NoiseFn, Perlin};
 
 use crate::{assets::prelude::*, identity::prelude::*};
 
@@ -16,37 +15,6 @@ pub struct BlockData {
 }
 
 impl Chunk {
-    /// 使用噪声生成区块
-    /// seed: 随机种子，相同种子生成相同地形
-    /// scale: 噪声缩放比例，控制地形起伏
-    /// height_scale: 高度缩放比例
-    pub fn generate_with_noise(seed: u32, scale: f64, height_scale: f64) -> Self {
-        let perlin = Perlin::new(seed);
-        let mut data = HashMap::new();
-
-        for x in 0..CHUNK_SIZE {
-            for z in 0..CHUNK_SIZE {
-                // 获取噪声值
-                let noise_value = perlin.get([x as f64 / scale, z as f64 / scale]);
-
-                // 将噪声值映射到高度
-                let height = ((noise_value + 1.0) * 0.5 * height_scale) as i32;
-
-                // 填充方块
-                for y in 0..=height {
-                    data.insert(
-                        IVec3::new(x, y, z),
-                        BlockData {
-                            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-                        },
-                    );
-                }
-            }
-        }
-
-        Chunk { data }
-    }
-
     pub fn mesh(&self, atlas: &AppTextureAtlas<TextureId>, models: &ModelManager) -> Mesh {
         let vertex = self
             .data

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{assets::prelude::*, chunk::Chunk, identity::prelude::*, render::prelude::*};
+use crate::{assets::prelude::*, chunks::prelude::*, identity::prelude::*, render::prelude::*};
 
 impl Model {
     pub fn vertex(
@@ -29,10 +29,8 @@ impl Model {
                 let min = element.min();
                 let max = element.max();
                 for (face, face_data) in &element.faces {
-                    // cullface
-
                     // TODO: Alpha Face?
-                    if should_cull_face(pos, element, *face, face_data, chunk, models) {
+                    if should_cull_face(pos, *face, element, face_data, chunk, models) {
                         bevy::log::info!("pos: {:?}, face: {:?}, cullface", pos, face);
                         continue;
                     }
@@ -86,21 +84,12 @@ impl Model {
             indices,
         })
     }
-
-    pub fn faces(&self, face: BlockFace) -> Option<Vec<Face<'_>>> {
-        self.elements.as_ref().map(|elemtnes| {
-            elemtnes
-                .iter()
-                .flat_map(|element| element.faces(face))
-                .collect::<Vec<_>>()
-        })
-    }
 }
 
 fn should_cull_face(
     pos: IVec3,
-    element: &Element,
     face: BlockFace,
+    element: &Element,
     face_data: &ElementFace,
     chunk: &Chunk,
     models: &ModelManager,

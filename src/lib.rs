@@ -1,4 +1,4 @@
 pub mod assets;
-pub mod chunk;
+pub mod chunks;
 pub mod identity;
 pub mod render;

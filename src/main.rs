@@ -7,7 +7,7 @@ use bevy::{
     },
 };
 
-use bevy_craft::{assets::prelude::*, chunk::Chunk, identity::prelude::*};
+use bevy_craft::{assets::prelude::*, chunks::prelude::*, identity::prelude::*};
 
 fn main() {
     App::new()
@@ -36,39 +36,39 @@ fn render_dirt(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // let mut chunk = Chunk::default();
-    // chunk.data.insert(
-    //     IVec3::new(0, 0, 0),
-    //     BlockData {
-    //         id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-    //     },
-    // );
-    // chunk.data.insert(
-    //     IVec3::new(0, 1, 0),
-    //     BlockData {
-    //         id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-    //     },
-    // );
-    // chunk.data.insert(
-    //     IVec3::new(1, 0, 0),
-    //     BlockData {
-    //         id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-    //     },
-    // );
-    // chunk.data.insert(
-    //     IVec3::new(0, 0, 1),
-    //     BlockData {
-    //         id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-    //     },
-    // );
-    // chunk.data.insert(
-    //     IVec3::new(2, 0, 1),
-    //     BlockData {
-    //         id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
-    //     },
-    // );
-    //
-    let chunk = Chunk::generate_with_noise(1234, 0.1, 0.1);
+    let mut chunk = Chunk::default();
+    chunk.data.insert(
+        IVec3::new(0, 0, 0),
+        BlockData {
+            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
+        },
+    );
+    chunk.data.insert(
+        IVec3::new(0, 1, 0),
+        BlockData {
+            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
+        },
+    );
+    chunk.data.insert(
+        IVec3::new(1, 0, 0),
+        BlockData {
+            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
+        },
+    );
+    chunk.data.insert(
+        IVec3::new(0, 0, 1),
+        BlockData {
+            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
+        },
+    );
+    chunk.data.insert(
+        IVec3::new(2, 0, 1),
+        BlockData {
+            id: BlockId("bevy_craft:block/cherry_stairs".to_string()),
+        },
+    );
+
+    // let chunk = Chunk::generate_with_noise(1234, 0.1, 0.1);
     let mesh = chunk.mesh(&atlas, &models);
 
     commands.spawn((

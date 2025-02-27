@@ -32,6 +32,15 @@ impl Model {
             }
         }
     }
+
+    pub fn faces(&self, face: BlockFace) -> Option<Vec<Face<'_>>> {
+        self.elements.as_ref().map(|elemtnes| {
+            elemtnes
+                .iter()
+                .flat_map(|element| element.faces(face))
+                .collect::<Vec<_>>()
+        })
+    }
 }
 
 #[cfg(test)]
