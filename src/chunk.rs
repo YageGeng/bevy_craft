@@ -71,6 +71,10 @@ impl Chunk {
             .next()
             .map(|(block_pos, _)| block_pos.xz().div_euclid(IVec2::splat(CHUNK_SIZE)))
     }
+
+    pub fn opposite(&self, pos: IVec3, face: BlockFace) -> Option<&BlockData> {
+        self.data.get(&(pos + IVec3::from(face)))
+    }
 }
 
 #[cfg(test)]

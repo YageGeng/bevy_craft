@@ -1,12 +1,7 @@
-use bevy::{math::I8Vec3, prelude::*, utils::HashMap};
+use bevy::{prelude::*, utils::HashMap};
 use serde::{Deserialize, Serialize};
 
 use crate::assets::prelude::*;
-
-pub const DEFAULT_ELEMENT_SIZE: f32 = 16.0;
-pub const FULL_OFFSET: i8 = 8;
-pub const BLOCK_CENTER: [i8; 3] = [8, 8, 8];
-const DEFAULT_TEXTURE_SIZE: i8 = 16;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Element {
@@ -19,75 +14,23 @@ pub struct Element {
 }
 
 impl Element {
-    pub const fn block_center() -> I8Vec3 {
-        I8Vec3::from_array(BLOCK_CENTER)
+    pub fn faces(&self, face: BlockFace) -> Option<Face<'_>> {
+        self.faces.get(&face).map(|data| Face {
+            from: self.from,
+            to: self.to,
+            face,
+            data,
+        })
+    }
+}
+
+impl FaceAble for Element {
+    fn from(&self) -> [i8; 3] {
+        self.from
     }
 
-    pub fn min(&self) -> Vec3 {
-        Vec3::new(
-            self.from[0] as f32 / DEFAULT_ELEMENT_SIZE,
-            self.from[1] as f32 / DEFAULT_ELEMENT_SIZE,
-            self.from[2] as f32 / DEFAULT_ELEMENT_SIZE,
-        )
-    }
-
-    pub fn max(&self) -> Vec3 {
-        Vec3::new(
-            self.to[0] as f32 / DEFAULT_ELEMENT_SIZE,
-            self.to[1] as f32 / DEFAULT_ELEMENT_SIZE,
-            self.to[2] as f32 / DEFAULT_ELEMENT_SIZE,
-        )
-    }
-
-    pub fn is_full_face(&self, face: BlockFace) -> bool {
-        let center = Self::block_center();
-        let min_offset = center - I8Vec3::from_array(self.from);
-        let max_offset = I8Vec3::from_array(self.to) - center;
-
-        match face {
-            BlockFace::Down => {
-                min_offset.y == FULL_OFFSET
-                    && min_offset.x == FULL_OFFSET
-                    && min_offset.z == FULL_OFFSET
-                    && max_offset.x == FULL_OFFSET
-                    && max_offset.z == FULL_OFFSET
-            }
-            BlockFace::Up => {
-                min_offset.x == FULL_OFFSET
-                    && min_offset.z == FULL_OFFSET
-                    && max_offset.x == FULL_OFFSET
-                    && max_offset.y == FULL_OFFSET
-                    && max_offset.z == FULL_OFFSET
-            }
-            BlockFace::North => {
-                min_offset.x == FULL_OFFSET
-                    && min_offset.y == FULL_OFFSET
-                    && min_offset.z == FULL_OFFSET
-                    && max_offset.x == FULL_OFFSET
-                    && max_offset.y == FULL_OFFSET
-            }
-            BlockFace::South => {
-                min_offset.x == FULL_OFFSET
-                    && min_offset.y == FULL_OFFSET
-                    && max_offset.x == FULL_OFFSET
-                    && max_offset.y == FULL_OFFSET
-                    && max_offset.z == FULL_OFFSET
-            }
-            BlockFace::West => {
-                min_offset.x == FULL_OFFSET
-                    && min_offset.y == FULL_OFFSET
-                    && min_offset.z == FULL_OFFSET
-                    && max_offset.y == FULL_OFFSET
-                    && max_offset.z == FULL_OFFSET
-            }
-            BlockFace::East => {
-                min_offset.y == FULL_OFFSET
-                    && min_offset.z == FULL_OFFSET
-                    && max_offset.x == FULL_OFFSET
-                    && max_offset.y == FULL_OFFSET
-                    && max_offset.z == FULL_OFFSET
-            }
-        }
+    fn to(&self) -> [i8; 3] {
+        self.to
     }
 }
 
@@ -114,6 +57,13 @@ pub enum BlockFace {
     East,  // +X
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Axis {
+    X,
+    Y,
+    Z,
+}
+
 impl BlockFace {
     #[rustfmt::skip]
     pub const fn normal(&self) -> [f32; 3] {
@@ -131,42 +81,38 @@ impl BlockFace {
         crate::block_vertex!(self, min, max)
     }
 
-    pub fn vertex_i8(&self, min: [i8; 3], max: [i8; 3]) -> [[i8; 3]; 4] {
-        crate::block_vertex!(self, min, max)
-    }
-
     pub fn uv(&self, min: [i8; 3], max: [i8; 3]) -> [i8; 4] {
         match self {
             BlockFace::Down => [
                 min[0],
-                DEFAULT_TEXTURE_SIZE - max[2],
+                DEFAULT_ELEMENT_SIZE_I8 - max[2],
                 max[0],
-                DEFAULT_TEXTURE_SIZE - min[2],
+                DEFAULT_ELEMENT_SIZE_I8 - min[2],
             ],
             BlockFace::Up => [min[0], min[2], max[0], max[2]],
             BlockFace::North => [
-                DEFAULT_TEXTURE_SIZE - max[0],
-                DEFAULT_TEXTURE_SIZE - max[1],
-                DEFAULT_TEXTURE_SIZE - min[0],
-                DEFAULT_TEXTURE_SIZE - min[1],
+                DEFAULT_ELEMENT_SIZE_I8 - max[0],
+                DEFAULT_ELEMENT_SIZE_I8 - max[1],
+                DEFAULT_ELEMENT_SIZE_I8 - min[0],
+                DEFAULT_ELEMENT_SIZE_I8 - min[1],
             ],
             BlockFace::South => [
                 min[0],
-                DEFAULT_TEXTURE_SIZE - max[1],
+                DEFAULT_ELEMENT_SIZE_I8 - max[1],
                 max[0],
-                DEFAULT_TEXTURE_SIZE - min[1],
+                DEFAULT_ELEMENT_SIZE_I8 - min[1],
             ],
             BlockFace::West => [
                 min[2],
-                DEFAULT_TEXTURE_SIZE - max[1],
+                DEFAULT_ELEMENT_SIZE_I8 - max[1],
                 max[2],
-                DEFAULT_TEXTURE_SIZE - min[1],
+                DEFAULT_ELEMENT_SIZE_I8 - min[1],
             ],
             BlockFace::East => [
-                DEFAULT_TEXTURE_SIZE - max[2],
-                DEFAULT_TEXTURE_SIZE - max[1],
-                DEFAULT_TEXTURE_SIZE - min[2],
-                DEFAULT_TEXTURE_SIZE - min[1],
+                DEFAULT_ELEMENT_SIZE_I8 - max[2],
+                DEFAULT_ELEMENT_SIZE_I8 - max[1],
+                DEFAULT_ELEMENT_SIZE_I8 - min[2],
+                DEFAULT_ELEMENT_SIZE_I8 - min[1],
             ],
         }
     }
@@ -192,7 +138,7 @@ impl BlockFace {
         }
     }
 
-    pub fn opposite(&self) -> BlockFace {
+    pub const fn opposite(&self) -> BlockFace {
         match self {
             BlockFace::Down => BlockFace::Up,
             BlockFace::Up => BlockFace::Down,
@@ -200,6 +146,21 @@ impl BlockFace {
             BlockFace::South => BlockFace::North,
             BlockFace::West => BlockFace::East,
             BlockFace::East => BlockFace::West,
+        }
+    }
+
+    pub const fn is_neg_axis(&self) -> bool {
+        match self {
+            BlockFace::Down | BlockFace::North | BlockFace::West => true,
+            BlockFace::Up | BlockFace::South | BlockFace::East => false,
+        }
+    }
+
+    pub const fn default_size(&self) -> i8 {
+        if self.is_neg_axis() {
+            0
+        } else {
+            DEFAULT_ELEMENT_SIZE_I8
         }
     }
 }
@@ -214,6 +175,22 @@ impl From<BlockFace> for IVec3 {
             BlockFace::West => IVec3::NEG_X,
             BlockFace::East => IVec3::X,
         }
+    }
+}
+
+impl From<BlockFace> for Axis {
+    fn from(value: BlockFace) -> Self {
+        match value {
+            BlockFace::Down | BlockFace::Up => Axis::Y,
+            BlockFace::North | BlockFace::South => Axis::Z,
+            BlockFace::West | BlockFace::East => Axis::X,
+        }
+    }
+}
+
+impl From<&BlockFace> for Axis {
+    fn from(value: &BlockFace) -> Self {
+        (*value).into()
     }
 }
 
