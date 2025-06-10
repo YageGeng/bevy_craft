@@ -1,7 +1,9 @@
 use std::marker::PhantomData;
 use std::ops::Index;
 
-use bevy::{image::ImageSampler, prelude::*, sprite::TextureAtlasBuilderError, utils::HashMap};
+use bevy::image::TextureAtlasBuilderError;
+use bevy::platform::collections::HashMap;
+use bevy::{image::ImageSampler, prelude::*};
 
 use crate::assets::prelude::*;
 use crate::identity::prelude::*;
@@ -99,7 +101,7 @@ pub fn build_atlas(
                     max_size *= 2;
                     continue;
                 }
-                TextureAtlasBuilderError::WrongFormat => {
+                _ => {
                     // NOTE: maybe only log and break?
                     panic!("{}", err);
                 }

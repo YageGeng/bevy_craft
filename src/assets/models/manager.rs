@@ -1,7 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
 use crate::identity::prelude::*;
-use bevy::{log, prelude::*, utils::HashMap};
+use bevy::{log, platform::collections::HashMap, prelude::*};
 use topo_sort::TopoSort;
 
 use crate::assets::prelude::*;

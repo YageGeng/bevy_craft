@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use bevy::utils::HashMap;
+use bevy::platform::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 const MODEL_TEXTURE_TAG: char = '#';

@@ -3,7 +3,7 @@ use bevy::{
     prelude::*,
     render::{
         settings::{Backends, PowerPreference, RenderCreation, WgpuSettings},
-        RenderPlugin,
+        RenderDebugFlags, RenderPlugin,
     },
 };
 
@@ -19,7 +19,9 @@ fn main() {
             }),
             ..Default::default()
         }))
-        .add_plugins(WireframePlugin)
+        .add_plugins(WireframePlugin::new(
+            RenderDebugFlags::ALLOW_COPIES_FROM_INDIRECT_PARAMETERS,
+        ))
         .add_plugins(AppAssetPlugin)
         .add_systems(OnEnter(AppLoadState::Next), render_dirt)
         .add_systems(Update, input_handler)
